@@ -2,6 +2,7 @@ import React, { Fragment } from "react";
 import { Link } from "react-router-dom";
 
 import { Banner } from "../components/banner";
+import { FeaturedRooms } from "../components/featuredRooms";
 import { Hero } from "../components/hero";
 import { Services } from "../components/services";
 
@@ -16,6 +17,7 @@ export const Home = () => {
         </Banner>
       </Hero>
       <Services />
+      <FeaturedRooms />
     </Fragment>
   );
 };
