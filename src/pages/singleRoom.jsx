@@ -3,12 +3,11 @@ import { Link } from "react-router-dom";
 
 import { Banner } from "../components/banner";
 import { defaultBcg } from "../images/room-1.jpeg";
-import { Hero } from "../components/hero";
 import StyledHero from "../components/styledHero";
 import { RoomContext } from "../context";
 
 export const SingleRoom = props => {
-  const [state, setState] = useState({
+  const [state] = useState({
     slug: props.match.params.slug,
     defaultBcg
   });
