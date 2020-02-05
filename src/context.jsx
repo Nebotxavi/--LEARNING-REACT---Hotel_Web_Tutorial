@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import items from "./data";
+// import items from "./data";
+import Client from "./contentful";
 
 const RoomContext = React.createContext();
 
@@ -21,31 +22,40 @@ const RoomProvider = ({ children }) => {
   });
   const [sortedRooms, setSortedRooms] = useState({ sortedRooms: [] });
 
-  useEffect(() => {
-    console.log("INTO USE EFFECT (STATE)");
-    const rooms = formatData(items);
-    const featuredRooms = rooms.filter(room => room.featured === true);
-    let maxPrice = Math.max(...rooms.map(item => item.price));
-    let maxSize = Math.max(...rooms.map(item => item.size));
-    setState(prevState => ({
-      ...prevState,
-      rooms,
-      featuredRooms,
-      // sortedRooms: rooms,
-      loading: false,
-      price: maxPrice,
-      maxPrice,
-      maxSize
-    }));
-    setSortedRooms({ sortedRooms: rooms });
+  function formatData(items) {
+    return items.map(item => {
+      const id = item.sys.id;
+      const images = item.fields.images.map(image => image.fields.file.url);
+      return { ...item.fields, images, id };
+    });
+  }
 
-    function formatData(items) {
-      return items.map(item => {
-        const id = item.sys.id;
-        const images = item.fields.images.map(image => image.fields.file.url);
-        return { ...item.fields, images, id };
-      });
-    }
+  useEffect(() => {
+    const getData = async () => {
+      try {
+        let response = await Client.getEntries({
+          content_type: "ruralResortRoom"
+        });
+        const rooms = formatData(response.items);
+        const featuredRooms = rooms.filter(room => room.featured === true);
+        let maxPrice = Math.max(...rooms.map(item => item.price));
+        let maxSize = Math.max(...rooms.map(item => item.size));
+        setState(prevState => ({
+          ...prevState,
+          rooms,
+          featuredRooms,
+          // sortedRooms: rooms,
+          loading: false,
+          price: maxPrice,
+          maxPrice,
+          maxSize
+        }));
+        setSortedRooms({ sortedRooms: rooms });
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    getData();
   }, []);
 
   function getRoom(slug) {
